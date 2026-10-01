@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../service');
+const app = require('../service.js');
 const { DB } = require('./database/database.js')
 const { Role } = require('./model/model.js')
 
