@@ -35,5 +35,3 @@ test('login', async () => {
 function expectValidJwt(potentialJwt) {
   expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
 }
-
-// TODO: Make it so it creates a new version of the database so that the test has a clean version to use and it doesn't polute my local database
