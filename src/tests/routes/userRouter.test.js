@@ -1,14 +1,12 @@
 const request = require('supertest');
 const app = require('../../service.js');
-const { randomName, bearer, expectValidJwt, registerUser, createAdmin, dropTestDb } = require('../testUtils.js');
+const { randomName, bearer, expectValidJwt, registerUser, createAdmin } = require('../testUtils.js');
 
 let admin;
 
 beforeAll(async () => {
   admin = await createAdmin();
 });
-
-afterAll(dropTestDb);
 
 describe('GET /api/user/me', () => {
   test('returns the authenticated user', async () => {

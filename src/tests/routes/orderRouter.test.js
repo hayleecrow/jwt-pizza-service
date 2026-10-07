@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../service.js');
-const { randomName, bearer, registerUser, createAdmin, dropTestDb } = require('../testUtils.js');
+const { randomName, bearer, registerUser, createAdmin } = require('../testUtils.js');
 
 let admin;
 let diner;
@@ -19,8 +19,6 @@ beforeEach(() => {
 afterEach(() => {
   global.fetch = originalFetch;
 });
-
-afterAll(dropTestDb);
 
 async function addMenuItem() {
   const item = { title: randomName(), description: 'test pizza', image: 'pizza.png', price: 0.05 };

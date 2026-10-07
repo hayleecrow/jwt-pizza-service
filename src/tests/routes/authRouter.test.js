@@ -1,14 +1,12 @@
 const request = require('supertest');
 const app = require('../../service.js');
-const { randomName, bearer, expectValidJwt, registerUser, dropTestDb } = require('../testUtils.js');
+const { randomName, bearer, expectValidJwt, registerUser } = require('../testUtils.js');
 
 let testUser;
 
 beforeAll(async () => {
   testUser = await registerUser();
 });
-
-afterAll(dropTestDb);
 
 describe('register', () => {
   test('creates a diner and returns a token', async () => {

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../service.js');
-const { randomName, bearer, registerUser, createAdmin, createFranchise, dropTestDb } = require('../testUtils.js');
+const { randomName, bearer, registerUser, createAdmin, createFranchise } = require('../testUtils.js');
 
 let admin;
 let franchisee;
@@ -11,8 +11,6 @@ beforeAll(async () => {
   franchisee = await registerUser();
   otherUser = await registerUser();
 });
-
-afterAll(dropTestDb);
 
 async function listFranchises(query) {
   return request(app).get(`/api/franchise?${query}`);
