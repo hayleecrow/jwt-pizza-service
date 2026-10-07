@@ -40,14 +40,4 @@ async function createFranchise(adminToken, franchiseeEmail, name = randomName())
   return res.body;
 }
 
-async function dropTestDb() {
-  if (process.env.DB_NAME !== 'pizza_test') return; // never drop a real database
-  const connection = await DB.getConnection();
-  try {
-    await DB.query(connection, 'DROP DATABASE pizza_test');
-  } finally {
-    connection.end();
-  }
-}
-
-module.exports = { randomName, bearer, expectValidJwt, registerUser, createAdmin, createFranchise, dropTestDb };
+module.exports = { randomName, bearer, expectValidJwt, registerUser, createAdmin, createFranchise };

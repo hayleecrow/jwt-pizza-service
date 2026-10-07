@@ -5,5 +5,7 @@
     "global": {
       "lines": 80
     }
-  }
+  },
+  "globalSetup": "<rootDir>/src/tests/globalSetup.js",
+  "globalTeardown": "<rootDir>/src/tests/globalTeardown.js"
 }

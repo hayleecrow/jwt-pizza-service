@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "cd src && node index.js",
-    "test:coverage": "cross-env DB_NAME=pizza_test jest --runInBand --coverage",
-    "test": "cross-env DB_NAME=pizza_test jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
+    "test": "jest --runInBand",
     "lint": "eslint"
   },
   "license": "MIT",
@@ -18,7 +18,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "cross-env": "^10.1.0",
     "eslint": "^10.11.0",
     "globals": "^17.12.0",
     "jest": "^30.5.2",
