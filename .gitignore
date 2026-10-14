@@ -4,3 +4,6 @@
 config.js
 coverage
 dist
+
+# Claude
+.claude/*.local.*
