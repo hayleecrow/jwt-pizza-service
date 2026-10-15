@@ -146,3 +146,8 @@ describe("not implemented endpoints", () => {
     });
   });
 });
+
+test("list users", async () => {
+  const listUsersRes = await request(app).get("/api/user");
+  expect(listUsersRes.status).toBe(200);
+});
