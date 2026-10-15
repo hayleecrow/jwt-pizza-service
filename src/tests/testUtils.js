@@ -17,9 +17,9 @@ function expectValidJwt(potentialJwt) {
 }
 
 // Registers a new diner through the API.
-async function registerUser() {
+async function registerUser(name = randomName()) {
   const user = {
-    name: randomName(),
+    name,
     email: randomName() + "@test.com",
     password: "a",
   };

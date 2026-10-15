@@ -126,13 +126,81 @@ describe("GET /api/user", () => {
     expect(res.status).toBe(401);
   });
 
-  test("list users", async () => {
+  test("non-admin gets 403", async () => {
     const user = await registerUser();
 
     const res = await request(app)
       .get("/api/user")
       .set("Authorization", bearer(user.token));
 
+    expect(res.status).toBe(403);
+  });
+
+  test("admin gets users with name, email and roles only", async () => {
+    const user = await registerUser();
+
+    const res = await request(app)
+      .get("/api/user?limit=100&name=" + user.name)
+      .set("Authorization", bearer(admin.token));
+
     expect(res.status).toBe(200);
+    expect(res.body.users).toEqual([
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        roles: [{ role: "diner" }],
+      },
+    ]);
+    expect(res.body.more).toBe(false);
+  });
+
+  test("name filter is a case-insensitive contains match", async () => {
+    const tag = randomName();
+    const a = await registerUser(`${tag}Alpha`);
+    await registerUser(`${tag}beta`);
+
+    const res = await request(app)
+      .get(`/api/user?name=${tag.toUpperCase()}alp`)
+      .set("Authorization", bearer(admin.token));
+
+    expect(res.status).toBe(200);
+    expect(res.body.users.map((u) => u.id)).toEqual([a.id]);
+  });
+
+  test("name=* returns users without filtering", async () => {
+    const res = await request(app)
+      .get("/api/user?name=*")
+      .set("Authorization", bearer(admin.token));
+
+    expect(res.status).toBe(200);
+    expect(res.body.users.length).toBeGreaterThan(0);
+  });
+
+  test("paginates with page (1-based) and limit, and reports more", async () => {
+    const tag = randomName();
+    const ids = [];
+    for (let i = 0; i < 3; i++) ids.push((await registerUser(`${tag}${i}`)).id);
+
+    const page1 = await request(app)
+      .get(`/api/user?name=${tag}&page=1&limit=2`)
+      .set("Authorization", bearer(admin.token));
+    const page2 = await request(app)
+      .get(`/api/user?name=${tag}&page=2&limit=2`)
+      .set("Authorization", bearer(admin.token));
+
+    expect(page1.body.users.map((u) => u.id)).toEqual(ids.slice(0, 2));
+    expect(page1.body.more).toBe(true);
+    expect(page2.body.users.map((u) => u.id)).toEqual(ids.slice(2));
+    expect(page2.body.more).toBe(false);
+  });
+
+  test("defaults to page 1 with 10 users", async () => {
+    const res = await request(app)
+      .get("/api/user")
+      .set("Authorization", bearer(admin.token));
+
+    expect(res.status).toBe(200);
+    expect(res.body.users.length).toBeLessThanOrEqual(10);
   });
 });

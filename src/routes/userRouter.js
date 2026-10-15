@@ -39,8 +39,9 @@ userRouter.docs = [
     method: "GET",
     path: "/api/user?page=1&limit=10&name=*",
     requiresAuth: true,
-    description: "Gets a list of users",
-    example: `curl -X GET localhost:3000/api/user -H 'Authorization: Bearer tttttt'`,
+    description:
+      "Gets a list of users (admin only). page is 1-based (default 1), limit defaults to 10, name is a case-insensitive contains filter ('*' matches all)",
+    example: `curl -X GET 'localhost:3000/api/user?page=1&limit=10&name=*' -H 'Authorization: Bearer tttttt'`,
     response: {
       users: [
         {
@@ -50,6 +51,7 @@ userRouter.docs = [
           roles: [{ role: "admin" }],
         },
       ],
+      more: false,
     },
   },
 ];
@@ -95,7 +97,14 @@ userRouter.get(
   "/",
   authRouter.authenticateToken,
   asyncHandler(async (req, res) => {
-    res.json({});
+    if (!req.user.isRole(Role.Admin)) {
+      return res.status(403).json({ message: "unauthorized" });
+    }
+
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.max(1, Number(req.query.limit) || 10);
+    const [users, more] = await DB.getUsers(page, limit, req.query.name || "*");
+    res.json({ users, more });
   }),
 );
 
