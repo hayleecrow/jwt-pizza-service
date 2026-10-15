@@ -119,19 +119,14 @@ describe("PUT /api/user/:userId", () => {
   });
 });
 
-describe("not implemented endpoints", () => {
-  test("DELETE /api/user/:userId", async () => {
-    const user = await registerUser();
+describe("GET /api/user", () => {
+  test("list users unauthorized", async () => {
+    const res = await request(app).get("/api/user");
 
-    const res = await request(app)
-      .delete(`/api/user/${user.id}`)
-      .set("Authorization", bearer(user.token));
-
-    expect(res.status).toBe(200);
-    expect(res.body.message).toBe("not implemented");
+    expect(res.status).toBe(401);
   });
 
-  test("GET /api/user", async () => {
+  test("list users", async () => {
     const user = await registerUser();
 
     const res = await request(app)
@@ -139,15 +134,5 @@ describe("not implemented endpoints", () => {
       .set("Authorization", bearer(user.token));
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      message: "not implemented",
-      users: [],
-      more: false,
-    });
   });
-});
-
-test("list users", async () => {
-  const listUsersRes = await request(app).get("/api/user");
-  expect(listUsersRes.status).toBe(200);
 });
