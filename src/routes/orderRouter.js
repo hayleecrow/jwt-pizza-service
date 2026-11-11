@@ -1,5 +1,6 @@
 const express = require("express");
 const config = require("../config.js");
+const metrics = require("../metrics.js");
 const { Role, DB } = require("../database/database.js");
 const { authRouter } = require("./authRouter.js");
 const { asyncHandler, StatusCodeError } = require("../endpointHelper.js");
@@ -115,6 +116,7 @@ orderRouter.post(
   asyncHandler(async (req, res) => {
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);
+    const factoryStart = Date.now();
     const r = await fetch(`${config.factory.url}/api/order`, {
       method: "POST",
       headers: {
@@ -127,6 +129,13 @@ orderRouter.post(
       }),
     });
     const j = await r.json();
+    const orderTotal = (order.items || []).reduce((s, i) => s + i.price, 0);
+    metrics.pizzaPurchase(
+      r.ok,
+      Date.now() - factoryStart,
+      r.ok ? orderTotal : 0,
+      (order.items || []).length,
+    );
     if (r.ok) {
       res.send({ order, followLinkToEndChaos: j.reportUrl, jwt: j.jwt });
     } else {
