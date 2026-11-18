@@ -30,7 +30,10 @@ class Logger {
   };
 
   dbLogger(sql, params) {
-    this.log("info", "db", { user: this.currentUser(), sql, params });
+    // Positional params aren't masked by key name, so hide them entirely for
+    // any statement that touches a password column.
+    const safeParams = /password/i.test(sql) ? "*****" : params;
+    this.log("info", "db", { user: this.currentUser(), sql, params: safeParams });
   }
 
   factoryLogger(reqBody, resBody, statusCode) {
@@ -91,7 +94,8 @@ class Logger {
     // Also catch secrets embedded inside already-stringified values (e.g. SQL text).
     return (text ?? "")
       .replace(/(password\s*=\s*)'[^']*'/gi, "$1'*****'")
-      .replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, "*****");
+      .replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, "*****")
+      .replace(/\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}/g, "*****");
   }
 
   sendLogToGrafana(event) {
