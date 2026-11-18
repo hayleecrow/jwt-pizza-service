@@ -47,7 +47,8 @@ class Logger {
   }
 
   unhandledErrorLogger(err, req) {
-    this.log("error", "exception", {
+    const status = err.statusCode ?? 500;
+    this.log(status >= 500 ? "error" : "warn", "exception", {
       user: this.currentUser(),
       method: req?.method,
       path: req?.originalUrl,
