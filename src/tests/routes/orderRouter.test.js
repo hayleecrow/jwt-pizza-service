@@ -108,7 +108,11 @@ describe("orders", () => {
     expect(res.body.order.id).toEqual(expect.any(Number));
     expect(res.body.jwt).toBe("factory.jwt.token");
     expect(res.body.followLinkToEndChaos).toBe("http://report");
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // The logger also uses fetch, so count only the calls made to the factory.
+    const factoryCalls = global.fetch.mock.calls.filter(([url]) =>
+      String(url).includes("/api/order"),
+    );
+    expect(factoryCalls).toHaveLength(1);
   });
 
   test("returns 500 when the factory rejects the order", async () => {
