@@ -31,8 +31,8 @@ class Logger {
 
   dbLogger(sql, params) {
     // Positional params aren't masked by key name, so hide them entirely for
-    // any statement that touches a password column.
-    const safeParams = /password/i.test(sql) ? "*****" : params;
+    // any statement that touches a password or auth token column.
+    const safeParams = /password|token/i.test(sql) ? "*****" : params;
     this.log("info", "db", { user: this.currentUser(), sql, params: safeParams });
   }
 
